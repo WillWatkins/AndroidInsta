@@ -26,6 +26,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
@@ -33,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     DatabaseReference reference = firebaseDatabase.getReference().child("registeredUsers");
+    ArrayAdapter arrayAdapter;
 
 
     @Override
@@ -51,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
         ArrayList<String> usernames = new ArrayList<>();
 
-        ArrayAdapter arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, usernames);
+        arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, usernames);
         userListView.setAdapter(arrayAdapter);
 
         reference.addValueEventListener(new ValueEventListener() {
@@ -63,6 +65,8 @@ public class MainActivity extends AppCompatActivity {
                     User users = snapshot1.getValue(User.class);
                     String retrievedUsernames = users.getUsername();
                     usernames.add(retrievedUsernames);
+                    Collections.sort(usernames);
+
                 }
                 arrayAdapter.notifyDataSetChanged();
             }
@@ -98,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void homeButtonClicked(View view){
-        startActivity(new Intent(MainActivity.this, MainActivity.class));
+       startActivity(new Intent(MainActivity.this, MainActivity.class));
     }
 
     public void searchButtonClicked(View view){

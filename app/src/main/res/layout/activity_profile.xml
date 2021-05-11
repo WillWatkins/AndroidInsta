@@ -15,4 +15,70 @@
         android:text="PROFILE ACTIVITY"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/iconsLayout"
+        android:layout_width="410dp"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/usersListView">
+
+        <Button
+            android:id="@+id/homeButton"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:onClick="homeButtonClicked"
+            app:backgroundTint="@android:color/white"
+            app:icon="@drawable/home"
+            app:iconGravity="textEnd"
+            app:iconTint="@color/black" />
+
+        <Button
+            android:id="@+id/seachButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="searchButtonClicked"
+            app:backgroundTint="@android:color/white"
+            app:icon="@android:drawable/ic_menu_search"
+            app:iconGravity="textEnd"
+            app:iconTint="@color/black" />
+
+        <Button
+            android:id="@+id/newPostButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="addPostButtonClicked"
+            app:backgroundTint="@android:color/white"
+            app:icon="@android:drawable/ic_menu_add"
+            app:iconGravity="textEnd"
+            app:iconTint="@color/black" />
+
+        <Button
+            android:id="@+id/marketPlaceButton"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:onClick="marketplaceButtonClicked"
+            app:backgroundTint="@android:color/white"
+            app:icon="@drawable/bag"
+            app:iconGravity="textEnd"
+            app:iconTint="@color/black" />
+
+        <Button
+            android:id="@+id/profileButton"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:onClick="profileButtonClicked"
+            app:backgroundTint="@android:color/white"
+            app:icon="@drawable/user"
+            app:iconGravity="textEnd"
+            app:iconTint="@color/black" />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
