@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "861361274226",
+    "project_id": "androidinsta-72a7b",
+    "storage_bucket": "androidinsta-72a7b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:861361274226:android:83716c6b6879b1328671eb",
+        "android_client_info": {
+          "package_name": "com.williamwatkins.androidinsta"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "861361274226-s8iffj97b4j2qeef8mjku273786l9spd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAi7z28AwmCU5gZ536x2kl_kUKI-fjod3I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "861361274226-s8iffj97b4j2qeef8mjku273786l9spd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
