@@ -2,6 +2,8 @@ package com.williamwatkins.androidinsta;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,6 +16,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -31,11 +34,15 @@ import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
+//    TextView usernameTextView;
+//    TextView likeCounterTextView;
+//    TextView captionTextView;
 
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-    DatabaseReference reference = firebaseDatabase.getReference().child("registeredUsers");
-    ArrayAdapter arrayAdapter;
 
+    //For calling the registered users
+    DatabaseReference usersReference = firebaseDatabase.getReference().child("registeredUsers");
+    ArrayAdapter arrayAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,23 +56,30 @@ public class MainActivity extends AppCompatActivity {
         Button profileButton = findViewById(R.id.profileButton);
 
 
-        ListView userListView = findViewById(R.id.usersListView);
+//        usernameTextView = findViewById(R.id.usernameTextView);
+//        likeCounterTextView = findViewById(R.id.numberOfLikesTextView);
+//        captionTextView = findViewById(R.id.captionTextView);
 
+
+        // For retrieving the users
+        ListView userListView = findViewById(R.id.feedListView);
         ArrayList<String> usernames = new ArrayList<>();
+
 
         arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, usernames);
         userListView.setAdapter(arrayAdapter);
 
-        reference.addValueEventListener(new ValueEventListener() {
+        usersReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 usernames.clear();
-                for (DataSnapshot snapshot1: Objects.requireNonNull(snapshot).getChildren()){
+                for (DataSnapshot snapshot1 : Objects.requireNonNull(snapshot).getChildren()) {
 
                     User users = snapshot1.getValue(User.class);
                     String retrievedUsernames = users.getUsername();
                     usernames.add(retrievedUsernames);
-                    Collections.sort(usernames);
+
+
 
                 }
                 arrayAdapter.notifyDataSetChanged();
