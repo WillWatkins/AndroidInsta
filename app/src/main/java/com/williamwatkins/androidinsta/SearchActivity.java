@@ -26,6 +26,7 @@ import java.util.Objects;
 public class SearchActivity extends AppCompatActivity {
 
 
+
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
 
     FeedRecyclerViewAdapter feedRecyclerViewAdapter;
