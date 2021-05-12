@@ -1,7 +1,6 @@
 package com.williamwatkins.androidinsta;
 
 import android.media.Image;
-import android.widget.TextView;
 
 public class UsersPost {
 
