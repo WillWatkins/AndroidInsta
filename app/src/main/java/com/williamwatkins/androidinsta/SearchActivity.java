@@ -26,12 +26,6 @@ import java.util.Objects;
 public class SearchActivity extends AppCompatActivity {
 
 
-
-    FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-
-    FeedRecyclerViewAdapter feedRecyclerViewAdapter;
-    DatabaseReference usersPostsReference = firebaseDatabase.getReference().child("registeredUsers").child("WillWatkins").child("Posts");
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,36 +37,6 @@ public class SearchActivity extends AppCompatActivity {
         Button marketplaceButton = findViewById(R.id.marketPlaceButton);
         Button profileButton = findViewById(R.id.profileButton);
 
-        RecyclerView feedRecyclerView = findViewById(R.id.feedRecyclerView);
-        ArrayList<UsersPost> usersPosts= new ArrayList<>();
-
-        feedRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        feedRecyclerViewAdapter = new FeedRecyclerViewAdapter(this, usersPosts);
-        feedRecyclerView.setAdapter(feedRecyclerViewAdapter);
-
-        usersPostsReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                for (DataSnapshot snapshot1: Objects.requireNonNull(snapshot).getChildren()){
-
-                    UsersPost getUsers = snapshot1.getValue(UsersPost.class);
-                    UsersPost retrievedUser = new UsersPost(getUsers.getUsername(), getUsers.getCaption(), getUsers.getNumberOfLikes());
-
-                    System.out.println("number of likes " + getUsers.getNumberOfLikes());
-                    usersPosts.add(retrievedUser);
-                    System.out.println("UserDetails:" + retrievedUser.getUsername() + " " + retrievedUser.getCaption() + " " + retrievedUser.getNumberOfLikes());
-
-                }
-
-                feedRecyclerViewAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
     }
 
     //Menu inflater

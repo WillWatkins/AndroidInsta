@@ -1,7 +1,6 @@
 package com.williamwatkins.androidinsta;
 
 import android.content.Context;
-import android.net.UrlQuerySanitizer;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,11 +31,10 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerVi
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        ;
 
         holder.username.setText(usersPosts.get(position).getUsername());
         holder.captionText.setText(usersPosts.get(position).getCaption());
-        holder.likes.setText(usersPosts.get(position).getNumberOfLikes());
+        holder.likes.setText(usersPosts.get(position).getLikes() + " likes");
     }
 
     @Override
@@ -52,7 +50,7 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerVi
             super(itemView);
             username = itemView.findViewById(R.id.usernameTextView);
             captionText = itemView.findViewById(R.id.captionTextView);
-            likes = itemView.findViewById(R.id.numberOfLikesTextView);
+            likes = itemView.findViewById(R.id.likesTextView);
         }
     }
 }

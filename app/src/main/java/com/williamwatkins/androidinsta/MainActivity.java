@@ -2,6 +2,8 @@ package com.williamwatkins.androidinsta;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,10 +11,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -24,11 +26,16 @@ import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
+    //Firebase database references
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
 
-    //For calling the registered users
-    DatabaseReference usersReference = firebaseDatabase.getReference().child("registeredUsers");
-    ArrayAdapter arrayAdapter;
+    //Needs to be changed to be more dynamic, it's hard coded for WillWatkins at the minute
+    DatabaseReference usersPostsReference = firebaseDatabase.getReference().child("registeredUsers").child("WillWatkins").child("Posts");;
+
+    //Firebase Auth
+    private FirebaseAuth firebaseAuth;
+
+    FeedRecyclerViewAdapter feedRecyclerViewAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,38 +48,35 @@ public class MainActivity extends AppCompatActivity {
         Button marketplaceButton = findViewById(R.id.marketPlaceButton);
         Button profileButton = findViewById(R.id.profileButton);
 
+        //Set up for the recycler view with a custom adapter to show user posts
+        RecyclerView feedRecyclerView = findViewById(R.id.feedRecyclerView);
+        ArrayList<UsersPost> usersPosts= new ArrayList<>();
+        feedRecyclerViewAdapter = new FeedRecyclerViewAdapter(this, usersPosts);
+        feedRecyclerView.setAdapter(feedRecyclerViewAdapter);
+        feedRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-//        usernameTextView = findViewById(R.id.usernameTextView);
-//        likeCounterTextView = findViewById(R.id.numberOfLikesTextView);
-//        captionTextView = findViewById(R.id.captionTextView);
-
-
-        // For retrieving the users
-        ListView userListView = findViewById(R.id.feedListView);
-        ArrayList<String> usernames = new ArrayList<>();
-
-
-        arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, usernames);
-        userListView.setAdapter(arrayAdapter);
-
-        usersReference.addValueEventListener(new ValueEventListener() {
+        //Retrieves the posts from the users on the firebase database and adds them to a recycler view
+        usersPostsReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                usernames.clear();
-                for (DataSnapshot snapshot1 : Objects.requireNonNull(snapshot).getChildren()) {
+                for (DataSnapshot snapshot1: Objects.requireNonNull(snapshot).getChildren()){
 
-                    User users = snapshot1.getValue(User.class);
-                    String retrievedUsernames = users.getUsername();
-                    usernames.add(retrievedUsernames);
+                    UsersPost getUsers = snapshot1.getValue(UsersPost.class);
+                    UsersPost retrievedUser = new UsersPost(getUsers.getUsername(), getUsers.getCaption(), getUsers.getLikes());
+
+                    usersPosts.add(retrievedUser);
                 }
-                arrayAdapter.notifyDataSetChanged();
+                //Once retrieved the data from the database, updates the recycler view
+                feedRecyclerViewAdapter.notifyDataSetChanged();
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
+
             }
         });
     }
+
 
     //Menu inflater
     @Override
@@ -98,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //Button methods
     public void homeButtonClicked(View view){
        startActivity(new Intent(MainActivity.this, MainActivity.class));
     }

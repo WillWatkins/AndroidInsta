@@ -47,6 +47,7 @@ public class Register extends AppCompatActivity {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+
         if(currentUser != null){
 
             startActivity(new Intent(Register.this, MainActivity.class));
@@ -93,7 +94,7 @@ public class Register extends AppCompatActivity {
                         reg_email.getText().toString());
 
                 //Adds users details to the database
-                reference.child(registerUser.getUsername()).setValue(registerUser);
+                reference.child(registerUser.getUsername()).child("userDetails").setValue(registerUser);
 
                 RegisterUser(reg_email.getText().toString(), reg_password.getText().toString());
                 }

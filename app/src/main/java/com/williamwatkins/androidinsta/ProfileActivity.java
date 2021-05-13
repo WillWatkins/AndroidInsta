@@ -12,6 +12,8 @@ import android.widget.ListView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -19,6 +21,12 @@ import java.util.Collections;
 import java.util.Objects;
 
 public class ProfileActivity extends AppCompatActivity {
+
+//    FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+//
+//    //For calling the registered users
+//    DatabaseReference usersReference = firebaseDatabase.getReference().child("registeredUsers");
+//    ArrayAdapter arrayAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,9 +40,12 @@ public class ProfileActivity extends AppCompatActivity {
         Button profileButton = findViewById(R.id.profileButton);
 
 
-//        //For retrieving the users
-//        ListView userListView = findViewById(R.id.usersListView);
+        //THIS WILL BE USED TO CHECK WHO THE USER FOLLOWS - may cause issues at first, needs tweaking before implementing
+
+//      //  For retrieving the users
+//        ListView userListView = findViewById(R.id.feedListView);
 //        ArrayList<String> usernames = new ArrayList<>();
+//
 //
 //        arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, usernames);
 //        userListView.setAdapter(arrayAdapter);
@@ -43,13 +54,11 @@ public class ProfileActivity extends AppCompatActivity {
 //            @Override
 //            public void onDataChange(@NonNull DataSnapshot snapshot) {
 //                usernames.clear();
-//                for (DataSnapshot snapshot1: Objects.requireNonNull(snapshot).getChildren()){
-//
-//                    User users = snapshot1.getValue(User.class);
-//                    String retrievedUsernames = users.getUsername();
-//                    usernames.add(retrievedUsernames);
-//                    Collections.sort(usernames);
-//
+//                for (DataSnapshot snapshot1 : Objects.requireNonNull(snapshot).getChildren()) {
+//                    System.out.println(snapshot1.toString());
+////                        User users = snapshot1.getValue(User.class);
+////                        String retrievedUsernames = users.getUsername();
+////                        usernames.add(retrievedUsernames);
 //                }
 //                arrayAdapter.notifyDataSetChanged();
 //            }
@@ -59,9 +68,6 @@ public class ProfileActivity extends AppCompatActivity {
 //            }
 //        });
     }
-
-
-
 
     public void homeButtonClicked(View view){
         startActivity(new Intent(ProfileActivity.this, MainActivity.class));

@@ -21,7 +21,6 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
-
     Button loginButton;
     Button toRegister;
     private TextInputEditText login_email;
@@ -36,6 +35,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+
         if(currentUser != null){
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
         }
@@ -55,7 +55,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         backgroundLayout.setOnClickListener((View.OnClickListener) this);
 
         firebaseAuth = FirebaseAuth.getInstance();
-
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -32,17 +32,17 @@
                 android:id="@+id/captionTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/numberOfLikesTextView"
+                android:layout_below="@id/likesTextView"
                 android:layout_margin="6dp"
                 android:padding="5dp"
                 android:textColor="@color/black"
                 android:textSize="11sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/numberOfLikesTextView" />
+                app:layout_constraintTop_toBottomOf="@+id/likesTextView" />
 
             <TextView
-                android:id="@+id/numberOfLikesTextView"
+                android:id="@+id/likesTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/postImage"
