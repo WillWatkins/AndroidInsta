@@ -5,11 +5,17 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -22,11 +28,17 @@ import java.util.Objects;
 
 public class ProfileActivity extends AppCompatActivity {
 
-//    FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-//
-//    //For calling the registered users
-//    DatabaseReference usersReference = firebaseDatabase.getReference().child("registeredUsers");
-//    ArrayAdapter arrayAdapter;
+    FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+    DatabaseReference userProfileReference;
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+
+    UserProfileDetails userProfileDetails;
+
+    TextView profileUsername;
+    TextView profileDescription;
+    Button profilePostsButton;
+    Button profileFollowersButton;
+    Button profileFollowingButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,35 +50,80 @@ public class ProfileActivity extends AppCompatActivity {
         Button addPostButton = findViewById(R.id.newPostButton);
         Button marketplaceButton = findViewById(R.id.marketPlaceButton);
         Button profileButton = findViewById(R.id.profileButton);
+        Button editProfile = findViewById(R.id.editProfileButton);
 
+        profileUsername = findViewById(R.id.profileUsername);
+        profileDescription = findViewById(R.id.profileDescription);
+        profilePostsButton = findViewById(R.id.profilePostsButton);
+        profileFollowersButton = findViewById(R.id.profileFollowersButton);
+        profileFollowingButton = findViewById(R.id.profileFollowingButton);
 
-        //THIS WILL BE USED TO CHECK WHO THE USER FOLLOWS - may cause issues at first, needs tweaking before implementing
+        FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+        String currentUserID = currentUser.getUid();
 
-//      //  For retrieving the users
-//        ListView userListView = findViewById(R.id.feedListView);
-//        ArrayList<String> usernames = new ArrayList<>();
-//
-//
-//        arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, usernames);
-//        userListView.setAdapter(arrayAdapter);
-//
-//        usersReference.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                usernames.clear();
-//                for (DataSnapshot snapshot1 : Objects.requireNonNull(snapshot).getChildren()) {
-//                    System.out.println(snapshot1.toString());
-////                        User users = snapshot1.getValue(User.class);
-////                        String retrievedUsernames = users.getUsername();
-////                        usernames.add(retrievedUsernames);
-//                }
-//                arrayAdapter.notifyDataSetChanged();
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//            }
-//        });
+        userProfileReference = firebaseDatabase.getReference().child("user_account_settings").child(currentUserID);
+
+        userProfileReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String displayName = snapshot.child("displayName").getValue().toString();
+                String followerCount = snapshot.child("followerCount").getValue().toString();
+                String followingCount = snapshot.child("followingCount").getValue().toString();
+                String posts = snapshot.child("posts").getValue().toString();
+                String profilePhoto= snapshot.child("profilePhoto").getValue().toString();
+                String username = snapshot.child("username").getValue().toString();
+                String website = snapshot.child("website").getValue().toString();
+                String description = snapshot.child("profileDescription").getValue().toString();
+
+                userProfileDetails = new UserProfileDetails(username, description, displayName, followerCount, followingCount, posts, profilePhoto, website);
+
+                updateProfile();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        editProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+    }
+
+    public void updateProfile(){
+        profileUsername.setText(userProfileDetails.getUsername());
+        profileDescription.setText(userProfileDetails.getProfileDescription());
+        profilePostsButton.setText(userProfileDetails.getPosts());
+        profileFollowersButton.setText(userProfileDetails.getFollowerCount());
+        profileFollowingButton.setText(userProfileDetails.getFollowingCount());
+    }
+    //Menu inflater
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    /* Menu Items
+
+    Current Items:
+        Settings Activity
+     */
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.settings:
+                startActivity(new Intent(ProfileActivity.this, Settings.class));
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     public void homeButtonClicked(View view){

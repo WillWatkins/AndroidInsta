@@ -39,8 +39,13 @@ public class Register extends AppCompatActivity {
 
     //Firebase database
     FirebaseDatabase database = FirebaseDatabase.getInstance();
-    DatabaseReference reference = database.getReference("/registeredUsers");
+    DatabaseReference registerUserReference = database.getReference("/registered_users");
+    DatabaseReference createProfileReference = database.getReference("/user_account_settings");
     private FirebaseAuth firebaseAuth;
+
+    String userID;
+    User registerUser;
+    UserProfileDetails newUserProfileDetails;
 
     @Override
     public void onStart() {
@@ -85,19 +90,20 @@ public class Register extends AppCompatActivity {
                     makeToastLong("Please complete all details for registration");
 
                 } else {
-                String age = reg_age.getText().toString();
+                    String age = reg_age.getText().toString();
 
-                User registerUser = new User(reg_name.getText().toString(),
-                        reg_surname.getText().toString(),
-                        reg_username.getText().toString(),
-                        Integer.parseInt(age),
-                        reg_email.getText().toString());
+                    registerUser = new User(reg_name.getText().toString(),
+                            reg_surname.getText().toString(),
+                            reg_username.getText().toString(),
+                            Integer.parseInt(age),
+                            reg_email.getText().toString(),
+                            "0");
 
-                //Adds users details to the database
-                reference.child(registerUser.getUsername()).child("userDetails").setValue(registerUser);
+                    newUserProfileDetails = new UserProfileDetails(registerUser.getUsername());
 
-                RegisterUser(reg_email.getText().toString(), reg_password.getText().toString());
-                }
+
+                    RegisterUser(reg_email.getText().toString(), reg_password.getText().toString());
+                    }
             }
         });
 
@@ -123,8 +129,13 @@ public class Register extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             Log.d("Create User", "SUCCESS");
-                            FirebaseUser user = firebaseAuth.getCurrentUser();
                             makeToastLong("Registration successful");
+                            FirebaseUser user = firebaseAuth.getCurrentUser();
+                            userID = user.getUid();
+                            registerUser.setUser_id(userID);
+                            System.out.println("USER ID:" + registerUser.user_id);
+                            registerUserReference.child(userID).setValue(registerUser);
+                            createProfileReference.child(userID).setValue(newUserProfileDetails);
                             startActivity(new Intent(Register.this, MainActivity.class));
                         } else {
                             Log.w("Create User", "FAILED", task.getException());
@@ -133,6 +144,7 @@ public class Register extends AppCompatActivity {
                     }
                 });
         }
+
     }
 
     private void makeToastLong(String string){

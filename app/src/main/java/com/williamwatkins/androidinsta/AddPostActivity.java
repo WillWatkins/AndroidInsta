@@ -19,6 +19,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -33,10 +35,17 @@ public class AddPostActivity extends AppCompatActivity {
 
     //Firebase database references
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-    DatabaseReference usernameReference = firebaseDatabase.getReference("registeredUsers");
+    DatabaseReference usernameReference = firebaseDatabase.getReference("users_content");
+    DatabaseReference usersDetails = firebaseDatabase.getReference("registered_users");
+
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
 
     TextInputEditText captionText;
     Button shareButton;
+
+    User users;
+    String username;
+    UsersPost post;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +54,10 @@ public class AddPostActivity extends AppCompatActivity {
 
         captionText = findViewById(R.id.captionText);
         shareButton = findViewById(R.id.shareButton);
+
+        FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+        String userID = currentUser.getUid();
+        String key = usernameReference.child(userID).push().getKey();
 
         //Checks for permission to access photos.
         if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
@@ -57,11 +70,23 @@ public class AddPostActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                UsersPost post = new UsersPost("WillWatkins", captionText.getText().toString());
-                String key = usernameReference.child(post.getUsername()).child("Posts").push().getKey();
-                usernameReference.child(post.getUsername()).child("Posts").child(key).setValue(post);
+                usersDetails.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        for (DataSnapshot snapshot1: Objects.requireNonNull(snapshot).getChildren()){
+                            users = snapshot1.getValue(User.class);
+                            username = users.getUsername();
+                            post = new UsersPost(username, captionText.getText().toString());
+                        }
+                        usernameReference.child(userID).child(key).setValue(post);
+                        startActivity(new Intent(AddPostActivity.this, MainActivity.class));
+                    }
 
-                startActivity(new Intent(AddPostActivity.this, MainActivity.class));
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
             }
         });
 

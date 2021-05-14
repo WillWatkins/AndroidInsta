@@ -2,12 +2,15 @@ package com.williamwatkins.androidinsta;
 
 import android.media.Image;
 
+import java.util.Date;
+
 public class UsersPost {
 
     private String username;
     private String caption;
     private Image postImage;
     private String likes;
+    private Date date;
 
     public UsersPost(){
 

@@ -9,6 +9,7 @@ public class User {
     private int age;
     private String email;
     private String password;
+    String user_id;
 
     //Empty constructor
     public User(){
@@ -16,12 +17,13 @@ public class User {
     }
 
     //Constructor
-    public User(String name, String surname, String username, int age, String email){
+    public User(String name, String surname, String username, int age, String email, String user_id){
         this.name = name;
         this.surname = surname;
         this.username = username;
         this.age = age;
         this.email = email;
+        this.user_id = user_id;
     }
 
     public User (String email, String password){
@@ -53,6 +55,10 @@ public class User {
         return age;
     }
 
+    public String getUser_id(){
+        return  user_id;
+    }
+
     public void setSurname(String surname) {
         this.surname = surname;
     }
@@ -75,5 +81,9 @@ public class User {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public void setUser_id(String user_id){
+        this.user_id = user_id;
     }
 }

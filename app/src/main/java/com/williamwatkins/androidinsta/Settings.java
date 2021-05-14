@@ -27,5 +27,17 @@ public class Settings extends AppCompatActivity {
                 startActivity(new Intent(Settings.this, LoginActivity.class));
             }
         });
+
+        //ADD the options to edit the profile details
+
+
+
+
+
+
+
+
+
+
     }
 }

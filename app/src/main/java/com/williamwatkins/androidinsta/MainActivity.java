@@ -26,16 +26,15 @@ import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
-    //Firebase database references
+    //Firebase database
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-
-    //Needs to be changed to be more dynamic, it's hard coded for WillWatkins at the minute
-    DatabaseReference usersPostsReference = firebaseDatabase.getReference().child("registeredUsers").child("WillWatkins").child("Posts");;
+    DatabaseReference usersPostsReference;
 
     //Firebase Auth
-    private FirebaseAuth firebaseAuth;
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
 
     FeedRecyclerViewAdapter feedRecyclerViewAdapter;
+    UsersPost retrievedUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,18 +54,29 @@ public class MainActivity extends AppCompatActivity {
         feedRecyclerView.setAdapter(feedRecyclerViewAdapter);
         feedRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+        String userID = currentUser.getUid();
+        usersPostsReference = firebaseDatabase.getReference().child("users_content");;
+
         //Retrieves the posts from the users on the firebase database and adds them to a recycler view
         usersPostsReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot snapshot1: Objects.requireNonNull(snapshot).getChildren()){
+                usersPosts.clear();
+                //Below loops through to the users
+                for (DataSnapshot UserIDs: Objects.requireNonNull(snapshot).getChildren()){
+                    //Below loops through each users posts and creates a Userpost object with the content for the post
+                    for (DataSnapshot usersContent: Objects.requireNonNull(UserIDs).getChildren()){
+                            String username = usersContent.child("username").getValue().toString();
+                            String caption = usersContent.child("caption").getValue().toString();
+                            String likes = usersContent.child("likes").getValue().toString();
+                            retrievedUser = new UsersPost(username, caption, likes);
 
-                    UsersPost getUsers = snapshot1.getValue(UsersPost.class);
-                    UsersPost retrievedUser = new UsersPost(getUsers.getUsername(), getUsers.getCaption(), getUsers.getLikes());
-
-                    usersPosts.add(retrievedUser);
+                        //Adds the retrieved user to the array
+                        usersPosts.add(retrievedUser);
+                    }
                 }
-                //Once retrieved the data from the database, updates the recycler view
+                //Once retrieved the data from the database, updates the recycler view with the new array
                 feedRecyclerViewAdapter.notifyDataSetChanged();
             }
 
@@ -75,31 +85,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-    }
-
-
-    //Menu inflater
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu, menu);
-        return true;
-    }
-
-    /* Menu Items
-
-    Current Items:
-        Settings Activity
-     */
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        switch (item.getItemId()) {
-            case R.id.settings:
-                startActivity(new Intent(MainActivity.this, Settings.class));
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
     }
 
     //Button methods
