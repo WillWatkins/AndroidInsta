@@ -34,27 +34,26 @@ public class Register extends AppCompatActivity {
     private TextInputEditText reg_age;
     private TextInputEditText reg_email;
     private TextInputEditText reg_password;
-    Button registerButton;
-    Button toLoginActivity;
+    private Button registerButton;
+    private Button toLoginActivity;
 
     //Firebase database
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference registerUserReference = database.getReference("/registered_users");
     DatabaseReference createProfileReference = database.getReference("/user_account_settings");
-    private FirebaseAuth firebaseAuth;
+    private FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
 
-    String userID;
-    User registerUser;
-    UserProfileDetails newUserProfileDetails;
+    private String userID;
+    private User registerUser;
+    private UserProfileDetails newUserProfileDetails;
 
     @Override
     public void onStart() {
         super.onStart();
+
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = firebaseAuth.getCurrentUser();
-
         if(currentUser != null){
-
             startActivity(new Intent(Register.this, MainActivity.class));
         }
     }
@@ -72,8 +71,6 @@ public class Register extends AppCompatActivity {
         reg_password = findViewById(R.id.passwordInput);
         registerButton = findViewById(R.id.registerButton);
         toLoginActivity = findViewById(R.id.toLoginActivity);
-
-        firebaseAuth = FirebaseAuth.getInstance();
 
         //Creates a new user and adds them to the database.
         registerButton.setOnClickListener(new View.OnClickListener() {
@@ -100,7 +97,6 @@ public class Register extends AppCompatActivity {
                             "0");
 
                     newUserProfileDetails = new UserProfileDetails(registerUser.getUsername());
-
 
                     RegisterUser(reg_email.getText().toString(), reg_password.getText().toString());
                     }
@@ -144,7 +140,6 @@ public class Register extends AppCompatActivity {
                     }
                 });
         }
-
     }
 
     private void makeToastLong(String string){

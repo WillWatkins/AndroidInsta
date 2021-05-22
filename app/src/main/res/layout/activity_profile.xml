@@ -99,7 +99,7 @@
             app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
         <TextView
-            android:id="@+id/profileDescription"
+            android:id="@+id/bio"
             android:layout_width="match_parent"
             android:layout_height="20dp"
             android:layout_marginStart="10dp"

@@ -3,35 +3,39 @@ package com.williamwatkins.androidinsta;
 public class UserProfileDetails {
 
     private String username;
-    private String profileDescription;
+    private String bio;
     private String displayName;
     private String followerCount;
     private String followingCount;
     private String posts;
-    //A string for now until I add firebase storage
+    //A string for now until I add firebase storage to allow for saving and retrieving images
     private String profilePhoto;
     private String website;
+    private String pronouns;
 
     public UserProfileDetails(){
 
     }
+
+    //Default details when a new user is registered. Used in the Register class
     public UserProfileDetails(String username){
         this.username = username;
-        profileDescription = "Bio...";
+        bio = "";
         displayName = username;
         followerCount = "0";
         followingCount = "0";
         posts = "0";
-        profilePhoto = "none";
-        website = "Website...";
-
+        profilePhoto = "";
+        website = "";
+        pronouns = "";
     }
 
-    public UserProfileDetails(String username, String profileDescription, String displayName,
+    //Used in the ProfileActivity class to populate the users Profile info.
+    public UserProfileDetails(String username, String bio, String displayName,
                               String followerCount, String followingCount, String posts,
                               String profilePhoto, String website) {
         this.username = username;
-        this.profileDescription = profileDescription;
+        this.bio = bio;
         this.displayName = displayName;
         this.followerCount = followerCount;
         this.followingCount = followingCount;
@@ -39,6 +43,16 @@ public class UserProfileDetails {
         this.profilePhoto = profilePhoto;
         this.website = website;
     }
+
+    //Used in the EditProfileActivity class to allow the users to change their details.
+    public UserProfileDetails(String name, String username, String pronouns, String website, String bio){
+        this.displayName = name;
+        this.username = username;
+        this.pronouns = pronouns;
+        this.website = website;
+        this.bio = bio;
+    }
+
 
     public String getUsername() {
         return username;
@@ -60,8 +74,8 @@ public class UserProfileDetails {
         return posts + " Posts";
     }
 
-    public String getProfileDescription() {
-        return profileDescription;
+    public String getBio() {
+        return bio;
     }
 
     public String getProfilePhoto() {
@@ -72,12 +86,17 @@ public class UserProfileDetails {
         return website;
     }
 
+    public String getPronouns() {
+        return pronouns;
+    }
+
+
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
     }
 
-    public void setProfileDescription(String profileDescription) {
-        this.profileDescription = profileDescription;
+    public void setBio(String bio) {
+        this.bio = bio;
     }
 
     public void setProfilePhoto(String profilePhoto) {
@@ -87,6 +106,7 @@ public class UserProfileDetails {
     public void setWebsite(String website) {
         this.website = website;
     }
+
 
     public void addFollowerCount(){
         followerCount = String.valueOf(Integer.parseInt(followerCount) + 1);
@@ -112,8 +132,9 @@ public class UserProfileDetails {
         posts = String.valueOf(Integer.parseInt(posts) - 1);
     }
 
-    public void changeDescription(String newDescription){
-        profileDescription = newDescription;
+
+    public void changeBio(String newBio){
+        bio = newBio;
     }
 
     public void changeDisplayName(String newDisplayName){
@@ -126,5 +147,9 @@ public class UserProfileDetails {
 
     public void changeWebsite(String websiteURL){
         website = websiteURL;
+    }
+
+    public void changePronouns(String newPronouns){
+        pronouns = newPronouns;
     }
 }

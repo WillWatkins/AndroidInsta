@@ -9,9 +9,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -22,10 +20,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Objects;
-
 public class ProfileActivity extends AppCompatActivity {
 
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
@@ -35,7 +29,7 @@ public class ProfileActivity extends AppCompatActivity {
     UserProfileDetails userProfileDetails;
 
     TextView profileUsername;
-    TextView profileDescription;
+    TextView bio;
     Button profilePostsButton;
     Button profileFollowersButton;
     Button profileFollowingButton;
@@ -53,7 +47,7 @@ public class ProfileActivity extends AppCompatActivity {
         Button editProfile = findViewById(R.id.editProfileButton);
 
         profileUsername = findViewById(R.id.profileUsername);
-        profileDescription = findViewById(R.id.profileDescription);
+        bio = findViewById(R.id.bio);
         profilePostsButton = findViewById(R.id.profilePostsButton);
         profileFollowersButton = findViewById(R.id.profileFollowersButton);
         profileFollowingButton = findViewById(R.id.profileFollowingButton);
@@ -73,9 +67,9 @@ public class ProfileActivity extends AppCompatActivity {
                 String profilePhoto= snapshot.child("profilePhoto").getValue().toString();
                 String username = snapshot.child("username").getValue().toString();
                 String website = snapshot.child("website").getValue().toString();
-                String description = snapshot.child("profileDescription").getValue().toString();
+                String bio = snapshot.child("bio").getValue().toString();
 
-                userProfileDetails = new UserProfileDetails(username, description, displayName, followerCount, followingCount, posts, profilePhoto, website);
+                userProfileDetails = new UserProfileDetails(username, bio, displayName, followerCount, followingCount, posts, profilePhoto, website);
 
                 updateProfile();
             }
@@ -89,15 +83,14 @@ public class ProfileActivity extends AppCompatActivity {
         editProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                startActivity(new Intent(ProfileActivity.this, EditProfileActivity.class));
             }
         });
-
     }
 
     public void updateProfile(){
         profileUsername.setText(userProfileDetails.getUsername());
-        profileDescription.setText(userProfileDetails.getProfileDescription());
+        bio.setText(userProfileDetails.getBio());
         profilePostsButton.setText(userProfileDetails.getPosts());
         profileFollowersButton.setText(userProfileDetails.getFollowerCount());
         profileFollowingButton.setText(userProfileDetails.getFollowingCount());

@@ -14,13 +14,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AndroidInsta">
-        <activity android:name=".ProfileActivity"></activity>
+        <activity android:name=".EditProfileActivity"></activity>
+        <activity android:name=".ProfileActivity" />
         <activity android:name=".MarketplaceActivity" />
         <activity android:name=".AddPostActivity" />
         <activity android:name=".SearchActivity" />
         <activity android:name=".Register" />
-        <activity android:name=".MainActivity"
-                android:label="Not insta"/>
+        <activity
+            android:name=".MainActivity"
+            android:label="Not insta" />
         <activity android:name=".Settings" />
         <activity android:name=".LoginActivity">
             <intent-filter>
