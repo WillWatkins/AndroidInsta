@@ -44,16 +44,6 @@ public class UserProfileDetails {
         this.website = website;
     }
 
-    //Used in the EditProfileActivity class to allow the users to change their details.
-    public UserProfileDetails(String name, String username, String pronouns, String website, String bio){
-        this.displayName = name;
-        this.username = username;
-        this.pronouns = pronouns;
-        this.website = website;
-        this.bio = bio;
-    }
-
-
     public String getUsername() {
         return username;
     }

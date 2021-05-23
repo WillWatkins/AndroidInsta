@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -35,6 +36,7 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerVi
         holder.username.setText(usersPosts.get(position).getUsername());
         holder.captionText.setText(usersPosts.get(position).getCaption());
         holder.likes.setText(usersPosts.get(position).getLikes() + " likes");
+        holder.postImage.setImageBitmap(usersPosts.get(position).getPostImage());
     }
 
     @Override
@@ -45,12 +47,14 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerVi
     public class MyViewHolder extends RecyclerView.ViewHolder{
 
         TextView username, captionText, likes;
+        ImageView postImage;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             username = itemView.findViewById(R.id.usernameTextView);
             captionText = itemView.findViewById(R.id.captionTextView);
             likes = itemView.findViewById(R.id.likesTextView);
+            postImage = itemView.findViewById(R.id.postImage);
         }
     }
 }

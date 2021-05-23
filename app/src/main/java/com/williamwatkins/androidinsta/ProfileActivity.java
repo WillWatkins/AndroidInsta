@@ -2,8 +2,11 @@ package com.williamwatkins.androidinsta;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,19 +23,26 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.Objects;
+
 public class ProfileActivity extends AppCompatActivity {
 
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     DatabaseReference userProfileReference;
+    DatabaseReference usersPostsReference;
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
 
+    //Variables used to update the current users profile with their profile details and to interact with them.
     UserProfileDetails userProfileDetails;
-
     TextView profileUsername;
     TextView bio;
     Button profilePostsButton;
     Button profileFollowersButton;
     Button profileFollowingButton;
+
+    FeedRecyclerViewAdapter feedRecyclerViewAdapter;
+    UsersPost post;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +89,46 @@ public class ProfileActivity extends AppCompatActivity {
 
             }
         });
+        usersPostsReference = firebaseDatabase.getReference().child("users_content").child(currentUserID);
+
+        //Set up for the recycler view with a custom adapter to show the current users posts
+        RecyclerView feedRecyclerView = findViewById(R.id.usersPostsRecyclerView);
+        ArrayList<UsersPost> usersPosts= new ArrayList<>();
+        feedRecyclerViewAdapter = new FeedRecyclerViewAdapter(this, usersPosts);
+        feedRecyclerView.setAdapter(feedRecyclerViewAdapter);
+        feedRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+
+        //Retrieves the current users posts from firebase and adds them to the above recycler view
+        usersPostsReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot usersRetrievedPosts) {
+                for (DataSnapshot postContent: Objects.requireNonNull(usersRetrievedPosts).getChildren()){
+                    String username = postContent.child("username").getValue().toString();
+                    String caption = postContent.child("caption").getValue().toString();
+                    String likes = postContent.child("likes").getValue().toString();
+
+
+//                    post = new UsersPost(username, caption, likes);
+//                    usersPosts.add(post);
+
+                    String nm = "Test";
+                    String cption = "ProfileActivity- change me line 115 after testing";
+                    String like = "1";
+                    post = new UsersPost(nm, cption, like, "TEST");
+                    usersPosts.add(post);
+                }
+                feedRecyclerViewAdapter.notifyDataSetChanged();
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+
 
         editProfile.setOnClickListener(new View.OnClickListener() {
             @Override

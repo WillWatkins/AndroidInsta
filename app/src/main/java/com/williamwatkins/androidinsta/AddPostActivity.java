@@ -17,7 +17,10 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -26,7 +29,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -36,9 +43,16 @@ public class AddPostActivity extends AppCompatActivity {
     //Firebase database references
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     DatabaseReference usernameReference = firebaseDatabase.getReference("users_content");
-    DatabaseReference usersDetails = firebaseDatabase.getReference("registered_users");
+    DatabaseReference usersDetails;
 
+    //Firebase Auth
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+    FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+    String userID = currentUser.getUid();
+
+    //Firebase Storage
+    FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
+    StorageReference storageReference = firebaseStorage.getReference().child("users_posts_images");
 
     TextInputEditText captionText;
     Button shareButton;
@@ -46,6 +60,7 @@ public class AddPostActivity extends AppCompatActivity {
     User users;
     String username;
     UsersPost post;
+    String key = usernameReference.child(userID).push().getKey();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,10 +70,6 @@ public class AddPostActivity extends AppCompatActivity {
         captionText = findViewById(R.id.captionText);
         shareButton = findViewById(R.id.shareButton);
 
-        FirebaseUser currentUser = firebaseAuth.getCurrentUser();
-        String userID = currentUser.getUid();
-        String key = usernameReference.child(userID).push().getKey();
-
         //Checks for permission to access photos.
         if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
@@ -66,18 +77,22 @@ public class AddPostActivity extends AppCompatActivity {
             getPhoto();
         }
 
+        usersDetails = firebaseDatabase.getReference("registered_users").child(userID);
+//        String key = usernameReference.child(userID).push().getKey();
+//
         shareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
+                //Retrieves the current users username from firebase to add to the post.
+                // Takes the users input for a post caption and adds them to the users content on firebase to be retrieved later
                 usersDetails.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        for (DataSnapshot snapshot1: Objects.requireNonNull(snapshot).getChildren()){
-                            users = snapshot1.getValue(User.class);
-                            username = users.getUsername();
-                            post = new UsersPost(username, captionText.getText().toString());
-                        }
+                        users = snapshot.getValue(User.class);
+                        username = users.getUsername();
+                        post = new UsersPost(username, captionText.getText().toString(), key, userID);
+
                         usernameReference.child(userID).child(key).setValue(post);
                         startActivity(new Intent(AddPostActivity.this, MainActivity.class));
                     }
@@ -89,7 +104,6 @@ public class AddPostActivity extends AppCompatActivity {
                 });
             }
         });
-
     }
 
     public void getPhoto(){
@@ -108,6 +122,10 @@ public class AddPostActivity extends AppCompatActivity {
         }
     }
 
+
+    //NEEDS TO BE MOVED WITHIN THE SHAREBUTTON ONCLICK, It is currently uploading the image as soon as it is selected from the images folder
+    //rather than uploading it when the user clicks the share button- if the user decides not to create the post, the image will still
+    //be uploaded rather than cancelled.
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -122,9 +140,32 @@ public class AddPostActivity extends AppCompatActivity {
                 ImageView imageView = findViewById(R.id.addPostImageView);
                 imageView.setImageBitmap(bitmap);
 
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                byte[] data1 = stream.toByteArray();
+
+                UploadTask uploadTask = storageReference.child(userID).child(key).putBytes(data1);
+                uploadTask.addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getApplicationContext(), "Upload failed: " + e, Toast.LENGTH_LONG);
+                        System.out.println("Upload failed: " + e);
+                    }
+                }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        taskSnapshot.getMetadata();
+                    }
+                });
+
+
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+//        else {
+//            startActivity(new Intent(AddPostActivity.this, MainActivity.class));
+//        }
     }
 }
