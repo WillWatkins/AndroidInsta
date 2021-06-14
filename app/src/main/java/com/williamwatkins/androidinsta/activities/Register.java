@@ -1,9 +1,8 @@
-package com.williamwatkins.androidinsta;
+package com.williamwatkins.androidinsta.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,6 +19,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.williamwatkins.androidinsta.R;
+import com.williamwatkins.androidinsta.models.User;
+import com.williamwatkins.androidinsta.models.UserProfileDetails;
 
 /*
 Register Class is used to register a user to the database to create an account
@@ -129,7 +131,6 @@ public class Register extends AppCompatActivity {
                             FirebaseUser user = firebaseAuth.getCurrentUser();
                             userID = user.getUid();
                             registerUser.setUser_id(userID);
-                            System.out.println("USER ID:" + registerUser.user_id);
                             registerUserReference.child(userID).setValue(registerUser);
                             createProfileReference.child(userID).setValue(newUserProfileDetails);
                             startActivity(new Intent(Register.this, MainActivity.class));

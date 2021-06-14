@@ -2,7 +2,6 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -48,10 +47,26 @@
                     app:layout_constraintStart_toEndOf="@id/usersProfilePhoto"
                     app:layout_constraintTop_toTopOf="parent" />
 
+                <TextView
+                    android:id="@+id/followTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginTop="10dp"
+                    android:clickable="true"
+                    android:padding="3dp"
+                    android:text="Follow"
+                    android:textColor="@android:color/holo_blue_light"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toEndOf="@id/usernameTextView"
+                    app:layout_constraintTop_toTopOf="parent" />
+
                 <Button
                     android:id="@+id/optionsbutton"
                     android:layout_width="40dp"
                     android:layout_height="50dp"
+
                     android:layout_gravity="center_horizontal"
                     android:layout_marginEnd="10dp"
                     app:backgroundTint="@color/white"
@@ -101,12 +116,5 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.cardview.widget.CardView>
-
-    <!--image view to display the post image-->
-
-    <!--text view to display likes count-->
-
-    <!--text view to display the caption
-        in instagram post-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

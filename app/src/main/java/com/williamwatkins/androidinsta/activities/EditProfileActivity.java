@@ -1,4 +1,4 @@
-package com.williamwatkins.androidinsta;
+package com.williamwatkins.androidinsta.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,6 +16,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.williamwatkins.androidinsta.R;
 
 public class EditProfileActivity extends AppCompatActivity {
 
@@ -34,14 +35,13 @@ public class EditProfileActivity extends AppCompatActivity {
     String pronouns;
     String website;
     String bio;
+    String profilePhotoFileName;
 
 
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     String currentUserID = firebaseAuth.getCurrentUser().getUid();
     DatabaseReference profileSettingsReference = firebaseDatabase.getReference("user_account_settings").child(currentUserID);
-
-    UserProfileDetails updatedUserProfileDetails;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +67,7 @@ public class EditProfileActivity extends AppCompatActivity {
                 pronouns = snapshot.child("pronouns").getValue().toString();
                 website = snapshot.child("website").getValue().toString();
                 bio = snapshot.child("bio").getValue().toString();
+                profilePhotoFileName = snapshot.child("profilePhoto").getValue().toString();
 
                 changeNameTextView.setText(name);
                 changeUsernameTextView.setText(username);
@@ -95,6 +96,9 @@ public class EditProfileActivity extends AppCompatActivity {
                 saveChanges();
             }
         });
+
+
+        
     }
 
     //Takes the users changes, updates the firebase database with the new values and then changes the activity to the profile Activity.
@@ -105,12 +109,6 @@ public class EditProfileActivity extends AppCompatActivity {
         pronouns = changePronounsTextView.getText().toString();
         website = changeWebsiteTextView.getText().toString();
         bio = changeBioTextView.getText().toString();
-
-        if (name.isEmpty()) {
-            name = "null";
-        }
-
-        //updatedUserProfileDetails = new UserProfileDetails(name, username, pronouns, website, bio);
 
         profileSettingsReference.child("displayName").setValue(name);
         profileSettingsReference.child("username").setValue(username);

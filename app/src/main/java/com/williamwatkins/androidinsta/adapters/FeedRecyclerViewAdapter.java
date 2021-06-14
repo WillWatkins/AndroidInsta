@@ -1,6 +1,7 @@
-package com.williamwatkins.androidinsta;
+package com.williamwatkins.androidinsta.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +9,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.williamwatkins.androidinsta.activities.OthersProfileActivity;
+import com.williamwatkins.androidinsta.R;
+import com.williamwatkins.androidinsta.models.UsersPost;
 
 import java.util.ArrayList;
 
@@ -44,7 +49,7 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerVi
         return usersPosts.size();
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder{
+    public class MyViewHolder extends RecyclerView.ViewHolder {
 
         TextView username, captionText, likes;
         ImageView postImage;
@@ -55,6 +60,24 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerVi
             captionText = itemView.findViewById(R.id.captionTextView);
             likes = itemView.findViewById(R.id.likesTextView);
             postImage = itemView.findViewById(R.id.postImage);
+
+            username.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    username.getContext().startActivity(new Intent(username.getContext(), OthersProfileActivity.class));
+                }
+            });
+
+            postImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    username.getContext().startActivity(new Intent(username.getContext(), OthersProfileActivity.class));
+                }
+            });
+
+
         }
     }
 }

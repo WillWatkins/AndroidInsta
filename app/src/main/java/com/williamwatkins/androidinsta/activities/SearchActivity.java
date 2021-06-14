@@ -1,4 +1,4 @@
-package com.williamwatkins.androidinsta;
+package com.williamwatkins.androidinsta.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -8,20 +8,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.media.Image;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -31,11 +26,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.williamwatkins.androidinsta.R;
+import com.williamwatkins.androidinsta.Settings;
+import com.williamwatkins.androidinsta.adapters.SearchRecyclerViewAdapter;
+import com.williamwatkins.androidinsta.models.UsersPost;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class MainActivity extends AppCompatActivity {
+public class SearchActivity extends AppCompatActivity {
 
     //Firebase database
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
@@ -48,13 +47,14 @@ public class MainActivity extends AppCompatActivity {
     FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
     StorageReference storageReference = firebaseStorage.getReference().child("users_posts_images");
 
-    FeedRecyclerViewAdapter feedRecyclerViewAdapter;
+    SearchRecyclerViewAdapter searchRecyclerViewAdapter;
+    //    FeedRecyclerViewAdapter feedRecyclerViewAdapter;
     UsersPost retrievedUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_search);
 
         Button homeButton = findViewById(R.id.homeButton);
         Button searchButton = findViewById(R.id.seachButton);
@@ -63,10 +63,10 @@ public class MainActivity extends AppCompatActivity {
         Button profileButton = findViewById(R.id.profileButton);
 
         //Set up for the recycler view with a custom adapter to show user posts
-        RecyclerView feedRecyclerView = findViewById(R.id.feedRecyclerView);
+        RecyclerView feedRecyclerView = findViewById(R.id.searchRecyclerView);
         ArrayList<UsersPost> usersPosts= new ArrayList<>();
-        feedRecyclerViewAdapter = new FeedRecyclerViewAdapter(this, usersPosts);
-        feedRecyclerView.setAdapter(feedRecyclerViewAdapter);
+        searchRecyclerViewAdapter = new SearchRecyclerViewAdapter(this, usersPosts);
+        feedRecyclerView.setAdapter(searchRecyclerViewAdapter);
         feedRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         FirebaseUser currentUser = firebaseAuth.getCurrentUser();
@@ -95,11 +95,11 @@ public class MainActivity extends AppCompatActivity {
                                 Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                                 retrievedUser = new UsersPost(username, caption, likes, bitmap);
 
-//                              Adds the retrieved user to the array
+                                //Adds the retrieved user to the array
                                 usersPosts.add(retrievedUser);
 
                                 //Once retrieved the data from the database, updates the recycler view with the new array
-                                feedRecyclerViewAdapter.notifyDataSetChanged();
+                                searchRecyclerViewAdapter.notifyDataSetChanged();
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override
@@ -116,26 +116,50 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
     }
 
-    //Button methods
+    //Menu inflater
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    /* Menu Items
+
+    Current Items:
+        Settings Activity
+     */
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.settings:
+                startActivity(new Intent(SearchActivity.this, Settings.class));
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     public void homeButtonClicked(View view){
-        startActivity(new Intent(MainActivity.this, MainActivity.class));
+        startActivity(new Intent(SearchActivity.this, MainActivity.class));
     }
 
     public void searchButtonClicked(View view){
-        startActivity(new Intent(MainActivity.this, SearchActivity.class));
+        startActivity(new Intent(SearchActivity.this, SearchActivity.class));
     }
 
     public void addPostButtonClicked(View view){
-        startActivity(new Intent(MainActivity.this, AddPostActivity.class));
+        startActivity(new Intent(SearchActivity.this, AddPostActivity.class));
     }
 
     public void marketplaceButtonClicked(View view){
-        startActivity(new Intent(MainActivity.this, MarketplaceActivity.class));
+        startActivity(new Intent(SearchActivity.this, MarketplaceActivity.class));
     }
 
     public void profileButtonClicked(View view){
-        startActivity(new Intent(MainActivity.this, ProfileActivity.class));
+        startActivity(new Intent(SearchActivity.this, ProfileActivity.class));
     }
 }

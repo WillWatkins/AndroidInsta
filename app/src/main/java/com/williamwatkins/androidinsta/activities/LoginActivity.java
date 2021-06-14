@@ -1,4 +1,4 @@
-package com.williamwatkins.androidinsta;
+package com.williamwatkins.androidinsta.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,6 +18,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.williamwatkins.androidinsta.R;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 

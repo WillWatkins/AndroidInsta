@@ -1,4 +1,4 @@
-package com.williamwatkins.androidinsta;
+package com.williamwatkins.androidinsta.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,6 +16,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -22,16 +25,31 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.williamwatkins.androidinsta.R;
+import com.williamwatkins.androidinsta.Settings;
+import com.williamwatkins.androidinsta.adapters.FeedRecyclerViewAdapter;
+import com.williamwatkins.androidinsta.models.UserProfileDetails;
+import com.williamwatkins.androidinsta.models.UsersPost;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class ProfileActivity extends AppCompatActivity {
 
+    //Firebase database
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     DatabaseReference userProfileReference;
     DatabaseReference usersPostsReference;
+
+    //Firebase Auth
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+
+    //Firebase Storage
+    FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
+    StorageReference storageReference = firebaseStorage.getReference().child("users_posts_images");
+    //StorageReference profilePhotoReference = firebaseStorage.getReference().child("users_profile_photo");
 
     //Variables used to update the current users profile with their profile details and to interact with them.
     UserProfileDetails userProfileDetails;
@@ -62,11 +80,14 @@ public class ProfileActivity extends AppCompatActivity {
         profileFollowersButton = findViewById(R.id.profileFollowersButton);
         profileFollowingButton = findViewById(R.id.profileFollowingButton);
 
+        //Firebase Auth- retrieves the current logged in users ID
         FirebaseUser currentUser = firebaseAuth.getCurrentUser();
         String currentUserID = currentUser.getUid();
 
         userProfileReference = firebaseDatabase.getReference().child("user_account_settings").child(currentUserID);
 
+        //Retrieves the current users most up-to-date profile details from the Firebase Database
+        //and then uses updateProfile() to populate the profile with this info.
         userProfileReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -89,9 +110,9 @@ public class ProfileActivity extends AppCompatActivity {
 
             }
         });
-        usersPostsReference = firebaseDatabase.getReference().child("users_content").child(currentUserID);
 
-        //Set up for the recycler view with a custom adapter to show the current users posts
+        //Set up for retrieving the users posts and the recycler view with a custom adapter to show the current users posts
+        usersPostsReference = firebaseDatabase.getReference().child("users_content").child(currentUserID);
         RecyclerView feedRecyclerView = findViewById(R.id.usersPostsRecyclerView);
         ArrayList<UsersPost> usersPosts= new ArrayList<>();
         feedRecyclerViewAdapter = new FeedRecyclerViewAdapter(this, usersPosts);
@@ -99,7 +120,7 @@ public class ProfileActivity extends AppCompatActivity {
         feedRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
 
-        //Retrieves the current users posts from firebase and adds them to the above recycler view
+        //Retrieves the current users posts from firebase database  nd adds them to the above recycler view
         usersPostsReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot usersRetrievedPosts) {
@@ -107,19 +128,31 @@ public class ProfileActivity extends AppCompatActivity {
                     String username = postContent.child("username").getValue().toString();
                     String caption = postContent.child("caption").getValue().toString();
                     String likes = postContent.child("likes").getValue().toString();
+                    String usersID = postContent.child("usersID").getValue().toString();
+                    String imageLabel = postContent.child("imageLabel").getValue().toString();
 
+                    //Retrieves the posts photo from Firebase Storage to be added to the post
+                    storageReference.child(usersID).child(imageLabel).getBytes(Long.MAX_VALUE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                        @Override
+                        public void onSuccess(byte[] bytes) {
 
-//                    post = new UsersPost(username, caption, likes);
-//                    usersPosts.add(post);
+                            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                            post = new UsersPost(username, caption, likes, bitmap);
 
-                    String nm = "Test";
-                    String cption = "ProfileActivity- change me line 115 after testing";
-                    String like = "1";
-                    post = new UsersPost(nm, cption, like, "TEST");
-                    usersPosts.add(post);
+                            //Adds the retrieved user to the array
+                            usersPosts.add(post);
+
+                            //Updates the recycler view with the new array
+                            feedRecyclerViewAdapter.notifyDataSetChanged();
+
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            System.out.println("Failure to retrieve image in Main Activity: " + exception);
+                        }
+                    });
                 }
-                feedRecyclerViewAdapter.notifyDataSetChanged();
-
             }
 
             @Override
@@ -128,8 +161,7 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
-
-
+        //Takes the user to the EditProfileActivity
         editProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -138,6 +170,7 @@ public class ProfileActivity extends AppCompatActivity {
         });
     }
 
+    //Sets the profile with the most up-to-date info which will be retrieved from the Firebase Database
     public void updateProfile(){
         profileUsername.setText(userProfileDetails.getUsername());
         bio.setText(userProfileDetails.getBio());
@@ -145,6 +178,7 @@ public class ProfileActivity extends AppCompatActivity {
         profileFollowersButton.setText(userProfileDetails.getFollowerCount());
         profileFollowingButton.setText(userProfileDetails.getFollowingCount());
     }
+
     //Menu inflater
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

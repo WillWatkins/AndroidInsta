@@ -1,4 +1,4 @@
-package com.williamwatkins.androidinsta;
+package com.williamwatkins.androidinsta.models;
 
 import android.graphics.Bitmap;
 import android.media.Image;
