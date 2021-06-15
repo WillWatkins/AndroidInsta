@@ -34,7 +34,11 @@ import com.williamwatkins.androidinsta.models.UserProfileDetails;
 import com.williamwatkins.androidinsta.models.UsersPost;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -42,6 +46,8 @@ public class ProfileActivity extends AppCompatActivity {
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     DatabaseReference userProfileReference;
     DatabaseReference usersPostsReference;
+    DatabaseReference followersReference;
+    DatabaseReference followingReference;
 
     //Firebase Auth
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
@@ -119,17 +125,19 @@ public class ProfileActivity extends AppCompatActivity {
         feedRecyclerView.setAdapter(feedRecyclerViewAdapter);
         feedRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-
         //Retrieves the current users posts from firebase database  nd adds them to the above recycler view
         usersPostsReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot usersRetrievedPosts) {
+                Integer count = 0;
                 for (DataSnapshot postContent: Objects.requireNonNull(usersRetrievedPosts).getChildren()){
                     String username = postContent.child("username").getValue().toString();
                     String caption = postContent.child("caption").getValue().toString();
                     String likes = postContent.child("likes").getValue().toString();
                     String usersID = postContent.child("usersID").getValue().toString();
                     String imageLabel = postContent.child("imageLabel").getValue().toString();
+
+                    count++;
 
                     //Retrieves the posts photo from Firebase Storage to be added to the post
                     storageReference.child(usersID).child(imageLabel).getBytes(Long.MAX_VALUE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
@@ -153,6 +161,49 @@ public class ProfileActivity extends AppCompatActivity {
                         }
                     });
                 }
+
+                userProfileReference.child("posts").setValue(count + " Posts");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        followersReference = firebaseDatabase.getReference().child("followers").child(currentUserID);
+
+        //Updates the follower count on the Follower button
+        followersReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Integer count = 0;
+                for (DataSnapshot users: Objects.requireNonNull(snapshot).getChildren()){
+                    System.out.println(users.toString());
+                    count++;
+
+                }
+                userProfileReference.child("followerCount").setValue(count + " Followers");
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        followingReference = firebaseDatabase.getReference().child("following").child(currentUserID);
+
+        followingReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Integer count = 0;
+                for (DataSnapshot users: Objects.requireNonNull(snapshot).getChildren()){
+                    System.out.println(users.toString());
+                    count++;
+                }
+                userProfileReference.child("followingCount").setValue(count + " Following");
             }
 
             @Override
