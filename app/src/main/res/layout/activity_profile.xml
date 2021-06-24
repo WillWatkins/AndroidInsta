@@ -36,7 +36,7 @@
             android:layout_marginStart="20dp"
             android:gravity="center"
             android:orientation="horizontal"
-            app:layout_constraintStart_toEndOf="@+id/imageView2"
+            app:layout_constraintStart_toEndOf="@+id/profilePhoto"
             app:layout_constraintTop_toTopOf="parent">
 
             <Button
@@ -77,7 +77,7 @@
         </LinearLayout>
 
         <ImageView
-            android:id="@+id/imageView2"
+            android:id="@+id/profilePhoto"
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_marginStart="10dp"
@@ -95,7 +95,7 @@
             android:layout_marginEnd="20dp"
             android:text="Display name"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/imageView2"
+            app:layout_constraintStart_toEndOf="@+id/profilePhoto"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
         <TextView

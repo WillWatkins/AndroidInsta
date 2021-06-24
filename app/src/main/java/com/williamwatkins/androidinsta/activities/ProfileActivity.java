@@ -14,6 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -55,7 +56,7 @@ public class ProfileActivity extends AppCompatActivity {
     //Firebase Storage
     FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
     StorageReference storageReference = firebaseStorage.getReference().child("users_posts_images");
-    //StorageReference profilePhotoReference = firebaseStorage.getReference().child("users_profile_photo");
+    StorageReference profilePhotoReference = firebaseStorage.getReference().child("users_profile_photos");
 
     //Variables used to update the current users profile with their profile details and to interact with them.
     UserProfileDetails userProfileDetails;
@@ -64,6 +65,7 @@ public class ProfileActivity extends AppCompatActivity {
     Button profilePostsButton;
     Button profileFollowersButton;
     Button profileFollowingButton;
+    ImageView profilePhotoImageView;
 
     FeedRecyclerViewAdapter feedRecyclerViewAdapter;
     UsersPost post;
@@ -85,6 +87,7 @@ public class ProfileActivity extends AppCompatActivity {
         profilePostsButton = findViewById(R.id.profilePostsButton);
         profileFollowersButton = findViewById(R.id.profileFollowersButton);
         profileFollowingButton = findViewById(R.id.profileFollowingButton);
+        profilePhotoImageView = findViewById(R.id.profilePhoto);
 
         //Firebase Auth- retrieves the current logged in users ID
         FirebaseUser currentUser = firebaseAuth.getCurrentUser();
@@ -101,7 +104,7 @@ public class ProfileActivity extends AppCompatActivity {
                 String followerCount = snapshot.child("followerCount").getValue().toString();
                 String followingCount = snapshot.child("followingCount").getValue().toString();
                 String posts = snapshot.child("posts").getValue().toString();
-                String profilePhoto= snapshot.child("profilePhoto").getValue().toString();
+                String profilePhoto = snapshot.child("profilePhoto").getValue().toString();
                 String username = snapshot.child("username").getValue().toString();
                 String website = snapshot.child("website").getValue().toString();
                 String bio = snapshot.child("bio").getValue().toString();
@@ -109,6 +112,22 @@ public class ProfileActivity extends AppCompatActivity {
                 userProfileDetails = new UserProfileDetails(username, bio, displayName, followerCount, followingCount, posts, profilePhoto, website);
 
                 updateProfile();
+
+
+                profilePhotoReference.child(currentUserID).child("-Mcz9DIOAIZOC37waVT-").getBytes(Long.MAX_VALUE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                    @Override
+                    public void onSuccess(byte[] bytes) {
+
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        profilePhotoImageView.setImageBitmap(bitmap);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        System.out.println("Failure to retrieve image in Main Activity: " + exception);
+                    }
+                });
+
             }
 
             @Override
@@ -217,6 +236,20 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(ProfileActivity.this, EditProfileActivity.class));
+            }
+        });
+
+        profileFollowersButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(ProfileActivity.this, FollowersActivity.class));
+            }
+        });
+
+        profileFollowingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(ProfileActivity.this, FollowingActivity.class));
             }
         });
     }

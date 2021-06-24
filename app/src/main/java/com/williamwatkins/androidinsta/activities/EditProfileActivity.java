@@ -1,22 +1,39 @@
 package com.williamwatkins.androidinsta.activities;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.williamwatkins.androidinsta.R;
+import com.williamwatkins.androidinsta.models.UsersPost;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 public class EditProfileActivity extends AppCompatActivity {
 
@@ -37,11 +54,17 @@ public class EditProfileActivity extends AppCompatActivity {
     String bio;
     String profilePhotoFileName;
 
-
+    //Firebase Auth
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-    FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     String currentUserID = firebaseAuth.getCurrentUser().getUid();
+
+    //Firebase Database
+    FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     DatabaseReference profileSettingsReference = firebaseDatabase.getReference("user_account_settings").child(currentUserID);
+
+    //Firebase Storage
+    FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
+    StorageReference profilePhotoStorageReference = firebaseStorage.getReference().child("users_profile_photos");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +79,6 @@ public class EditProfileActivity extends AppCompatActivity {
         changeWebsiteTextView = findViewById(R.id.editWebsiteTextView);
         changeBioTextView = findViewById(R.id.editBioTextView);
         profilePhotoImageView = findViewById(R.id.profilePhotoImageView);
-
 
         //On create, it updates the edit profile activity with the current users values to show what they currently have as their profile inputs.
         profileSettingsReference.addValueEventListener(new ValueEventListener() {
@@ -75,6 +97,20 @@ public class EditProfileActivity extends AppCompatActivity {
                 changeWebsiteTextView.setText(website);
                 changeBioTextView.setText(bio);
 
+
+                profilePhotoStorageReference.child(currentUserID).child(profilePhotoFileName).getBytes(Long.MAX_VALUE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                    @Override
+                    public void onSuccess(byte[] bytes) {
+
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        profilePhotoImageView.setImageBitmap(bitmap);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        System.out.println("Failure to retrieve image in Main Activity: " + exception);
+                    }
+                });
             }
 
             @Override
@@ -82,6 +118,8 @@ public class EditProfileActivity extends AppCompatActivity {
 
             }
         });
+
+
 
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,6 +132,13 @@ public class EditProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 saveChanges();
+            }
+        });
+
+        changeProfilePhotoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(EditProfileActivity.this, ChangeProfilePhotoActivity.class));
             }
         });
 

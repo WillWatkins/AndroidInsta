@@ -188,7 +188,6 @@ public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecycl
                     });
                 }
             });
-
         }
     }
 }

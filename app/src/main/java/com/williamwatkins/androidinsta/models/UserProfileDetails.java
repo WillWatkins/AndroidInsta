@@ -1,5 +1,7 @@
 package com.williamwatkins.androidinsta.models;
 
+import android.media.Image;
+
 public class UserProfileDetails {
 
     private String username;
